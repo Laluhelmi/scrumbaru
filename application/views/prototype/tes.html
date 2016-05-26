@@ -1,0 +1,58 @@
+<div class="col-md-12" align="center">
+	<a href="<?php echo site_url('prototype/dashboard') ?>"><button class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="bottom" title="<?php echo $info->judul ?>">Dashboard Scrum</button></a>
+</div>
+<div class="col-md-12">
+	<div class="col-md-6">
+		<table class="table">
+			<tr>
+				<th colspan="2"></th>
+			</tr>
+			<tr>
+				<td>Judul</td>
+				<td>:</td>
+				<td><?php echo $info->judul ?></td>
+			</tr>
+			<tr>
+				<td>Deskripsi</td>
+				<td>:</td>
+				<td><?php echo $info->deskripsi ?></td>
+			</tr>
+			<tr>
+				<td>Estimasi</td>
+				<td>:</td>
+				<td><?php echo $info->estimasi ?></td>
+			</tr>
+		</table>
+	</div>
+	<div class="col-md-6">
+		<div class="col-md-12" style="margin-top: 20px">
+			  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+		        Show Chat
+		      </button>
+		      	<div class="collapse" id="collapseExample">
+		          <div id="divExample" style="height:250px;width:auto;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;">
+		             <ul id="isi_chat"> 
+		             <!--  <?php foreach ($obrolan as $o): ?>
+		             				<li><?php echo $o->id_user ?> : <?php echo $o->message ?></li>
+		             <?php endforeach ?>  -->
+		              <ul>
+		          </div>
+		          <!-- <form action="<?php echo site_url('prototype/dash_project/kirim_chat/'.$info->id_project) ?>" method="POST"> -->
+		          <div class="col-md-2">
+		              <input value="<?php echo $this->session->userdata('id');?>" type="hidden" id="id_user" class="form-control" >
+		          </div>
+		           <div class="col-md-8" style="margin-top: 10px" align="left">
+		              <input value="<?php echo $cr ;?>" type="hidden" id="id_cr" class="form-control">
+		          </div>
+		          <div class="col-md-8" style="margin-top: 10px" align="left">
+		              <input placeholder="message" type="text" id="message" class="form-control">
+		          </div>
+		          <div class="col-md-2" style="margin-top: 10px">
+		          <input type="button" value="kirim" id="kirim" class="btn btn-md btn-warning"> 
+		          <!-- <button class="btn btn-warning btn-md" type="submit">kirim</button> -->
+		          </div>
+	         <!--  </form> -->
+	     		</div>
+	    </div>
+	</div>
+</div>

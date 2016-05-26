@@ -1,0 +1,21 @@
+public function getjoin() {
+		$id = $this->session->userdata('id_user');
+		//$this->db->where('username',$username);
+		
+		$this->db->select('*');
+		//$this->db->from('t_kamar');
+		//$where = "username='$username'";
+		$this->db->join('t_kategori','t_kamar.id_kategori = t_kategori.id_kategori');
+		$this->db->join('t_user','t_kamar.id_user = t_user.id_user');
+		$this->db->join('t_harga','t_kamar.id_harga = t_harga.id_harga');
+		$this->db->where('t_user.id_user', $id);
+		//$where = "id_user='$id_user'";
+		return $this->db->get('t_kamar')->result();
+		//$this->db->order_by($id_user);
+		/*$query = $this->db->get();
+			if ($query->num_rows() >0) {
+				foreach ($query->result() as $data) {
+					$hasil[] = $data;
+				}
+			return $hasil;*/
+			}
