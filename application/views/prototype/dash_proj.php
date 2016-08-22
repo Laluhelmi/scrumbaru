@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Scrum | <?php echo $info->judul ?></title>
+	<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
 </head>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
@@ -85,37 +86,7 @@
 			</div>
 			
 		</div>
-		<div class="col-md-6">
-			<div class="col-md-12" style="margin-top: 10px">
-				  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-			        Show Chat
-			      </button>
-			      	<div class="collapse" id="collapseExample">
-			          <div id="divExample" style="height:250px;width:auto;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;margin-top: 10px">
-			             <ul id="isi_chat"> 
-			             <!--  <?php foreach ($obrolan as $o): ?>
-			             				<li><?php echo $o->id_user ?> : <?php echo $o->message ?></li>
-			             <?php endforeach ?>  -->
-			              <ul>
-			          </div>
-			          <!-- <form action="<?php echo site_url('prototype/dash_project/kirim_chat/'.$info->id_project) ?>" method="POST"> -->
-			          <div class="col-md-2">
-			              <input value="<?php echo $this->session->userdata('id');?>" type="hidden" id="id_user" class="form-control" >
-			          </div>
-			           <div class="col-md-8" style="margin-top: 10px" align="left">
-			              <input value="<?php echo $cr ;?>" type="hidden" id="id_cr" class="form-control">
-			          </div>
-			          <div class="col-md-8" style="margin-top:0px; padding: 5px" align="left">
-			              <input placeholder="message" type="text" id="message" class="form-control">
-			          </div>
-			          <div class="col-md-2" style="margin-top:0px ;padding: 5px">
-			          <input type="button" value="kirim" id="kirim" class="btn btn-md btn-warning"> 
-			          <!-- <button class="btn btn-warning btn-md" type="submit">kirim</button> -->
-			          </div>
-		         <!--  </form> -->
-		     		</div>
-		    </div>
-		</div>
+		
 	</div>
 	<div class="col-md-12" style="padding: 10px; height: 5px;background-color: #337AB7"></div>
 	<div class="col-md-2" >
@@ -198,6 +169,37 @@
 					</div> <a class="list-group-item active"><span class="badge"><?php echo $jml_done ?></span>Total : </a>
 				</div>
 	</div>
+	<div class="col-md-4">
+			<div class="col-md-12" style="margin-top: 10px">
+				  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+			        Show Chat
+			      </button>
+			      	<div class="collapse" id="collapseExample">
+			          <div id="divExample" style="height:450px;width:auto;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;margin-top: 10px">
+			             <ul id="isi_chat"> 
+			             <!--  <?php foreach ($obrolan as $o): ?>
+			             				<li><?php echo $o->id_user ?> : <?php echo $o->message ?></li>
+			             <?php endforeach ?>  -->
+			              <ul>
+			          </div>
+			          <!-- <form action="<?php echo site_url('prototype/dash_project/kirim_chat/'.$info->id_project) ?>" method="POST"> -->
+			          <div class="col-md-2">
+			              <input value="<?php echo $this->session->userdata('id');?>" type="hidden" id="id_user" class="form-control" >
+			          </div>
+			           <div class="col-md-8" style="margin-top: 10px" align="left">
+			              <input value="<?php echo $cr ;?>" type="hidden" id="id_cr" class="form-control">
+			          </div>
+			          <div class="col-md-8" style="margin-top:0px; padding: 5px" align="left">
+			              <input placeholder="message" type="text" id="message" class="form-control">
+			          </div>
+			          <div class="col-md-2" style="margin-top:0px ;padding: 5px">
+			          <input type="button" value="kirim" id="kirim" class="btn btn-md btn-warning"> 
+			          <!-- <button class="btn btn-warning btn-md" type="submit">kirim</button> -->
+			          </div>
+		         <!--  </form> -->
+		     		</div>
+		    </div>
+		</div>
 </div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -228,6 +230,14 @@
             data: 'message=' + message + '&id_cr=' + id_cr +'&id_user=' + id_user,        
             success: function(data){                 
               $('#isi_chat').html(data);
+              var ref = new Firebase("https://testingscrum.firebaseio.com/");
+				    var postsRef = ref.child("posts");
+				    var newPostRef = postsRef.push();
+				      newPostRef.set({
+				                      user_id: id_user,
+				                      pesan: message,
+				                      user_cr: id_cr
+				  });
             }  
            });
           });

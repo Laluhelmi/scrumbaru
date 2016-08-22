@@ -76,11 +76,7 @@ class Dash_project extends CI_Controller {
     public function ambil_pesan()
     {
         $id_cr = $this->uri->segment(4);
-         //  $query2 = $this->db->get_where('tb_message', array('id_cr'=>$id_cr))->result_array();
-      	  // foreach ($query2 as $r) {
-      	  // 	$username = $this->db->get_where('tb_user',array('id_user'=> $r['id_user']))->row();
-      	  // 	echo "<li><div style='color:rgb(132, 135, 137)'><b>$username->username </b> : <small style='color:#000'> $r[message] </small>  <small><h6 style='color:#d4cece;margin-left:20px'>$r[waktu] </h6> </small></div> </li>";
-      	  // }
+        
                      $this->db->select('*');
                      $this->db->from('tb_message');
                      $this->db->join('tb_user', 'tb_user.id_user = tb_message.id_user');
@@ -88,8 +84,24 @@ class Dash_project extends CI_Controller {
                      $this->db->order_by('id_message', 'asc');
            $query2 = $this->db->get()->result_array();
           foreach ($query2 as $r) {
-             echo "<li>
-                      <div style='color:rgb(132, 135, 137)'>
+            if ($r['username']==$this->session->userdata('username')) {
+              echo "
+                      <div style='color:rgb(132, 135, 137);background-color:#339DD7;padding:10px;margin:10px' align='right'>
+                          
+                             <small style='color:#fff'> 
+                              $r[message]
+                            </small>
+                          
+                          <small>
+                            <h6 style='color:#d4cece;margin-left:20px'>
+                              $r[waktu]
+                            </h6>
+                          </small> 
+                      </div> 
+                  ";
+            } else {
+              echo "<li>
+                      <div style='color:rgb(132, 135, 137);background-color:#EFEFEF;padding:10px;margin-right:10px'>
                           <b>
                               $r[username]
                           </b> : 
@@ -103,6 +115,9 @@ class Dash_project extends CI_Controller {
                           </small> 
                       </div> 
                   </li>";
+            }
+            
+             
            }
     }
 

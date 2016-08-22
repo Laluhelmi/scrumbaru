@@ -110,7 +110,7 @@ $config['rest_realm'] = 'SCRUM REST API';
 |           authorization key
 |
 */
-$config['rest_auth'] = 'basic';
+$config['rest_auth'] = 'digest';
 
 /*
 |--------------------------------------------------------------------------
@@ -210,7 +210,6 @@ $config['auth_library_function'] = '';
 | Array of usernames and passwords for login, if ldap is configured this is ignored
 |
 */
-//$config['rest_valid_logins'] = ['PHASAR' => 'newstartupfromkampusuad'];
 $config['rest_valid_logins'] = ['PHASAR' => 'newstartupfromkampusuad'];
 
 /*

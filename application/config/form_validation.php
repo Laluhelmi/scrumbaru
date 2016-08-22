@@ -11,7 +11,6 @@ $config = array(
 			array('field'=>'username','label'=>'username','rules'=>'trim|required'),
 			array('field'=>'first_name','label'=>'first_name','rules'=>'trim|required|alpha_dash|max_length[16]'),
 			array('field'=>'last_name','label'=>'last_name','rules'=>'trim|required|alpha_dash|max_length[16]'),
-			array('display_pic'=>'first_name','label'=>'display_pic','rules'=>'trim'),
 		),
 		'login_post' => array(
 			array('field'=>'email','label'=>'email','rules'=>'trim|required|valid_email'),

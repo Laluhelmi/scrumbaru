@@ -25,7 +25,8 @@ class Login extends CI_Controller {
 			$array = array(
 				'is_login' => TRUE,
 				'id' => $query->row()->id_user,
-				'token' => $query->row()->token
+				'token' => $query->row()->token,
+				'username' => $query->row()->username
 			);
 			
 			$this->session->set_userdata( $array );
