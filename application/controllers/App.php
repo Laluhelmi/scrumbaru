@@ -232,13 +232,9 @@ class App extends REST_Controller {
     							'pesan' => 'token not registered'], REST_Controller::HTTP_NOT_FOUND);
     		} else {
     			$id_user = $ambil_id->row()->id_user;
-                //$cek = $this->M_api->get_join_dashboard($id_user)->num_rows();
                 $card= $this->M_api->get_join_three_table("tb_user", "tb_tim", "tb_project", "id_user", "id_project", "tb_tim.id_user", $id_user, "created", "asc");
             
-                
-                
                 if($card){
-                 
                   
                 $this->response([
                                     'status' => TRUE,
@@ -249,13 +245,33 @@ class App extends REST_Controller {
                                 'status' => FALSE,
                                 'pesan' => 'empty project'], REST_Controller::HTTP_NOT_FOUND);
                 }
-                
     		}
-    		
-    	
-    	
     }
 
+    public function daily_chat_get($id_project = null)
+    {
+        if ($id_project == null) {
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'unknow method'
+                            ], REST_Controller::HTTP_BAD_REQUEST);
+        } else {
+            $id_project = $this->uri->segment(3);
+            $cek = $this->M_api->show_daily($id_project)->num_rows();
+            if ($cek <= 0) {
+                $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'empty daily'], REST_Controller::HTTP_NOT_FOUND);
+            } else {
+                $query = $this->M_api->show_daily($id_project)->result();
+
+                $this->response([
+                                'status' => TRUE,
+                                'pesan' => $query], REST_Controller::HTTP_OK);
+            }
+        }
+            
+    }
 
     #fungsi service yg digunakan untuk mengirim chat di dalam tiap projek, dengan parameter id projek, dan token,
 	public function kirim_chat_post($projek = null , $user = null)
@@ -289,9 +305,6 @@ class App extends REST_Controller {
 
     			$data_projek = ['id_project' => $projek];
 
-    			// $ambil_id_cr = $this->M_api->get_keadaan('tb_chat_room', $data_projek )->row();
-    			// $id_cr = $ambil_id_cr->id_cr;
-    			
     			$data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('kirim_chat_post'));
     			$this->form_validation->set_data($data);
     			if ($this->form_validation->run('kirim_chat_post') == false) {
@@ -303,9 +316,11 @@ class App extends REST_Controller {
     						'message' => $this->post('message'),
     						// 'id_cr' => $id_cr,
     						'id_user' => $id_user,
-    						'id_project' => $projek
+    						'id_project' => $projek,
+                            'tanggal' => date("Y-m-d"),
+                            'jam' => gmdate("h:i:sa", time()+60*60*7)
     						];
-
+                            //date("h:i:sa")
 	    			$query_input = $this->M_api->insert_pesan('tb_message', $inputan);
 	    			
 	    			if ($query_input == TRUE) {
@@ -333,7 +348,7 @@ class App extends REST_Controller {
     }
 
     #fungsi service yg digunakan untuk mengambil data chat berdasarkan projek yg di tentukan dari parameter id projek "done"
-    public function read_chat_by_project_get($id_project = null)
+    public function read_chat_by_project_bynow_get($id_project = null)
     {
     	if ($id_project != null) {
 
@@ -376,6 +391,52 @@ class App extends REST_Controller {
     						'pesan' => 'error unknow'
     						], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
     	}
+    }
+
+     public function read_chat_by_project_bydate_get($id_project = null)
+    {
+        if ($id_project != null) {
+
+            $data = ['id_project' => $this->uri->segment(3)];
+            $tanggal = $this->uri->segment(4);
+            $cek_projek = $this->M_api->get_keadaan('tb_project', $data);
+            if ($cek_projek->num_rows() < 1) {
+
+                $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'project unknow'
+                            ], REST_Controller::HTTP_NOT_FOUND);
+            } else {
+
+                // $ambil_id_cr = $this->M_api->get_keadaan('tb_chat_room', $data)->row()->id_cr;
+                $id_projek = $data['id_project'];
+
+                $query_chat = $this->M_api->get_join_message_bydate($id_projek, $tanggal);
+
+                if ($query_chat->num_rows() <= 0) {
+
+                    $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'chat empty'
+                            ], REST_Controller::HTTP_NOT_FOUND);
+
+                } else {
+                    
+                    $data_chat = $query_chat->result();
+                    $this->response([
+                            'status' => TRUE,
+                            'pesan' => $data_chat
+                            ], REST_Controller::HTTP_OK);
+
+                }
+            }
+        } else {
+
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'error unknow'
+                            ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function show_tim_by_project_get($id_project=null)
@@ -442,11 +503,13 @@ class App extends REST_Controller {
     	if ($id_project != null) {
             $status = "1";
     		$query =   $this->M_api->get_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
+            $jumlah = $this->M_api->sum_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
     		if ($query) {
 
     			$this->response([
     						'status' => TRUE,
-    						'pesan' => $query
+    						'pesan' => $query,
+                            'jumlah' => $jumlah
     						], REST_Controller::HTTP_OK);
     		} else {
     			$this->response([
@@ -468,11 +531,13 @@ class App extends REST_Controller {
     	if ($id_project != null) {
              $status = "2";
     		$query =  $this->M_api->get_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
+            $jumlah = $this->M_api->sum_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
     		if ($query) {
 
     			$this->response([
     						'status' => TRUE,
-    						'pesan' => $query
+    						'pesan' => $query,
+                            'jumlah' => $jumlah
     						], REST_Controller::HTTP_OK);
     		} else {
     			$this->response([
@@ -494,11 +559,13 @@ class App extends REST_Controller {
     	if ($id_project != null) {
              $status = "3";
     		$query = $this->M_api->get_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
+            $jumlah = $this->M_api->sum_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
     		if ($query) {
 
     			$this->response([
     						'status' => TRUE,
-    						'pesan' => $query
+    						'pesan' => $query,
+                            'jumlah' => $jumlah
     						], REST_Controller::HTTP_OK);
     		} else {
     			$this->response([
@@ -531,7 +598,6 @@ class App extends REST_Controller {
     			$query = $this->M_api->get_keadaan('tb_user', $params)->row();
     			$id_user = $query->id_user;
     			
-    			// $cek_notif = $this->M_api->get_join_notif();
     			$notif = $this->M_api->list_baru('tb_notif', array('tb_notif.id_user'=> $id_user), 3, 'waktu', 'desc');
                
     			if (!$notif) {
@@ -557,8 +623,6 @@ class App extends REST_Controller {
     	}
     	
     }
-
-
 
     public function sendmail($to,$subject,$message)
     { 
@@ -587,6 +651,12 @@ class App extends REST_Controller {
             return FALSE;
           }
     }
+
+    // public function tes_daily_get()
+    // {
+    //     $q=$this->db->get_where('tb_message', array('tanggal' => date("y-m-d")  ))->result();
+    //     print_r($q);
+    // }
 
 }
 
