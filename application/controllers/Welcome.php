@@ -5,6 +5,6 @@ class Welcome extends CI_Controller {
 
 	public function index()
 	{
-		redirect('api/scrum/auth','refresh');
+		redirect('auth','refresh');
 	}
 }
