@@ -20,9 +20,12 @@ class M_api extends CI_Model {
 		$this->db->insert($table, $data);
 		return TRUE;
 	}
+	
 	public function list_baru($table, $where, $limit, $order,$order_type)
-	{
-    $this->db->where($where);
+	{	
+		$this->db->select('tb_user.username, tb_notif.jabatan, tb_notif.status, tb_notif.waktu');
+		$this->db->join('tb_user', 'tb_user.id_user = tb_notif.id_inviter');
+    	$this->db->where($where);
 		$this->db->order_by($order,$order_type);
 		$data = $this->db->get($table, $limit);
 		return $data->num_rows() > 0 ? $data->result() : FALSE;
