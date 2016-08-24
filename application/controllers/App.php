@@ -55,7 +55,7 @@ class App extends REST_Controller {
 	 			$this->response([
 	 							'status' => FALSE,
 	 				 		    'pesan' => 'user not registered'
-	 				 		     ], REST_Controller::HTTP_NOT_FOUND);
+	 				 		     ], REST_Controller::HTTP_OK);
 	 		} else {
 
 	 			$data = $query->row();
@@ -82,7 +82,7 @@ class App extends REST_Controller {
 			$this->response([
 							'status' => FALSE,
 				  			'pesan' => null
-				  			], REST_Controller::HTTP_NOT_FOUND);
+				  			], REST_Controller::HTTP_OK);
 		} else {
 
 			$this->response([
@@ -208,7 +208,7 @@ class App extends REST_Controller {
 					$this->response([
 									'status' => FALSE,
 							        'pesan' => 'User not registered !'
-							        ], REST_Controller::HTTP_NOT_FOUND);
+							        ], REST_Controller::HTTP_OK);
 
 				}
 			}
@@ -229,7 +229,7 @@ class App extends REST_Controller {
     		if ($cek <= 0) {
     			$this->response([
     							'status' => FALSE,
-    							'pesan' => 'token not registered'], REST_Controller::HTTP_NOT_FOUND);
+    							'pesan' => 'token not registered'], REST_Controller::HTTP_OK);
     		} else {
     			$id_user = $ambil_id->row()->id_user;
                 $card= $this->M_api->get_join_three_table("tb_user", "tb_tim", "tb_project", "id_user", "id_project", "tb_tim.id_user", $id_user, "created", "asc");
@@ -243,7 +243,7 @@ class App extends REST_Controller {
                 
                 $this->response([
                                 'status' => FALSE,
-                                'pesan' => 'empty project'], REST_Controller::HTTP_NOT_FOUND);
+                                'pesan' => 'empty project'], REST_Controller::HTTP_OK);
                 }
     		}
     }
@@ -261,7 +261,7 @@ class App extends REST_Controller {
             if ($cek <= 0) {
                 $this->response([
                             'status' => FALSE,
-                            'pesan' => 'empty daily'], REST_Controller::HTTP_NOT_FOUND);
+                            'pesan' => 'empty daily'], REST_Controller::HTTP_OK);
             } else {
                 $query = $this->M_api->show_daily($id_project)->result();
 
@@ -286,7 +286,7 @@ class App extends REST_Controller {
     			$this->response([
     							'status' => FALSE,
     				   			'pesan' => 'project not found'
-    				   			], REST_Controller::HTTP_NOT_FOUND);
+    				   			], REST_Controller::HTTP_OK);
     		}
     		
     		$data_token = ['token' => $token];
@@ -359,7 +359,7 @@ class App extends REST_Controller {
     			$this->response([
     						'status' => FALSE,
     						'pesan' => 'project unknow'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
     		} else {
 
     			// $ambil_id_cr = $this->M_api->get_keadaan('tb_chat_room', $data)->row()->id_cr;
@@ -372,7 +372,7 @@ class App extends REST_Controller {
     				$this->response([
     						'status' => FALSE,
     						'pesan' => 'chat empty'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
 
     			} else {
     				
@@ -405,7 +405,7 @@ class App extends REST_Controller {
                 $this->response([
                             'status' => FALSE,
                             'pesan' => 'project unknow'
-                            ], REST_Controller::HTTP_NOT_FOUND);
+                            ], REST_Controller::HTTP_OK);
             } else {
 
                 // $ambil_id_cr = $this->M_api->get_keadaan('tb_chat_room', $data)->row()->id_cr;
@@ -418,7 +418,7 @@ class App extends REST_Controller {
                     $this->response([
                             'status' => FALSE,
                             'pesan' => 'chat empty'
-                            ], REST_Controller::HTTP_NOT_FOUND);
+                            ], REST_Controller::HTTP_OK);
 
                 } else {
                     
@@ -447,7 +447,7 @@ class App extends REST_Controller {
             $this->response([
                             'status' => FALSE,
                             'pesan' => 'unknow project'
-                            ], REST_Controller::HTTP_NOT_FOUND);
+                            ], REST_Controller::HTTP_OK);
         }
     	if ($id_project != null) {
     		$query = $this->M_api->get_join_tim($id_project);
@@ -455,7 +455,7 @@ class App extends REST_Controller {
     			$this->response([
     						'status' => FALSE,
     						'pesan' => 'tim empty'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
     		} else {
     			$data = $query->result();
     			$this->response([
@@ -487,7 +487,7 @@ class App extends REST_Controller {
     			$this->response([
     						'status' => FALSE,
     						'pesan' => 'sprint not found'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
     		}
     	} else {
     		$this->response([
@@ -515,7 +515,7 @@ class App extends REST_Controller {
     			$this->response([
     						'status' => FALSE,
     						'pesan' => 'sprint not found'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
     		}
     	} else {
     		$this->response([
@@ -543,7 +543,7 @@ class App extends REST_Controller {
     			$this->response([
     						'status' => FALSE,
     						'pesan' => 'sprint not found'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
     		}
     	} else {
     		$this->response([
@@ -571,7 +571,7 @@ class App extends REST_Controller {
     			$this->response([
     						'status' => FALSE,
     						'pesan' => 'sprint not found'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
     		}
     	} else {
     		$this->response([
@@ -604,7 +604,7 @@ class App extends REST_Controller {
     				$this->response([
     						'status' => FALSE,
     						'pesan' => 'empty notif'
-    						], REST_Controller::HTTP_NOT_FOUND);
+    						], REST_Controller::HTTP_OK);
     			} else {
     				$data = $notif;
     				$this->response([
