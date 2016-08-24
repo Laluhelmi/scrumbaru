@@ -23,8 +23,9 @@ class M_api extends CI_Model {
 	
 	public function list_baru($table, $where, $limit, $order,$order_type)
 	{	
-		$this->db->select('tb_user.username, tb_notif.jabatan, tb_notif.status, tb_notif.waktu');
+		$this->db->select('tb_user.username, tb_notif.jabatan, tb_notif.status, tb_notif.waktu, tb_project.judul');
 		$this->db->join('tb_user', 'tb_user.id_user = tb_notif.id_inviter');
+		$this->db->join('tb_project', 'tb_project.id_project = tb_notif.id_project');
     	$this->db->where($where);
 		$this->db->order_by($order,$order_type);
 		$data = $this->db->get($table, $limit);
