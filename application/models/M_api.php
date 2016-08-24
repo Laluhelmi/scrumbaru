@@ -107,15 +107,15 @@ class M_api extends CI_Model {
         return $query;
 	}
 
-	// public function get_join_tim($id_project)
-	// {
-	// 	$this->db->select('username, jabatan');
- //        $this->db->from('tb_tim');
- //        $this->db->join('tb_user', 'tb_user.id_user = tb_tim.id_user');
- //        $this->db->where('id_project', $id_project);
- //        $query = $this->db->get();
- //        return $query;
-	// }
+	public function get_join_tim($id_project)
+	{
+		$this->db->select('username, jabatan');
+        $this->db->from('tb_tim');
+        $this->db->join('tb_user', 'tb_user.id_user = tb_tim.id_user');
+        $this->db->where('id_project', $id_project);
+        $query = $this->db->get();
+        return $query;
+	}
 
 	// public function get_join_notif()
 	// {
