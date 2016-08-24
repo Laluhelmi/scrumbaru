@@ -20,6 +20,13 @@ class M_api extends CI_Model {
 		$this->db->insert($table, $data);
 		return TRUE;
 	}
+	public function list_baru($table, $where, $limit, $order,$order_type)
+	{
+    $this->db->where($where);
+		$this->db->order_by($order,$order_type);
+		$data = $this->db->get($table, $limit);
+		return $data->num_rows() > 0 ? $data->result() : FALSE;
+	}
 
 	// public function get($table, $kolom, $order_type)
 	// {

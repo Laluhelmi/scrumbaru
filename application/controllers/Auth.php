@@ -20,7 +20,7 @@ class Auth extends REST_Controller {
 
 	public function index()
 	{
-		
+		echo "<div><h2 align=center>Welcome to SCRUM API</h2></div>";
 	}
 
 }
