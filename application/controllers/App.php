@@ -580,6 +580,33 @@ class App extends REST_Controller {
     						], REST_Controller::HTTP_BAD_REQUEST);
     	}
     }
+    public function show_verified_sprint_get($id_project = null )
+    {
+        $id_project = $this->uri->segment(3);
+        if ($id_project != null) {
+             $status = "4";
+            $query = $this->M_api->get_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
+            $jumlah = $this->M_api->sum_join_three_table_sprint_status('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc', $status);
+            if ($query) {
+
+                $this->response([
+                            'status' => TRUE,
+                            'pesan' => $query,
+                            'jumlah' => $jumlah
+                            ], REST_Controller::HTTP_OK);
+            } else {
+                $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'sprint not found'
+                            ], REST_Controller::HTTP_OK);
+            }
+        } else {
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'method unknow'
+                            ], REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
 
     public function notif_add_to_project_get($token=null)
     {
