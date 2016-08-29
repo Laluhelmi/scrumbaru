@@ -155,6 +155,7 @@ class M_api extends CI_Model {
 	{
 		 $this->db->select('distinct(tanggal)');
         $this->db->where('id_project', $id_project);
+        $this->db->order_by('tanggal', 'desc');
         $q = $this->db->get('tb_message');
         //$data = $q->result();
         return $q;
