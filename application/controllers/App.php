@@ -759,8 +759,8 @@ class App extends REST_Controller {
         $path_to_fcm = 'https://fcm.googleapis.com/fcm/send';
         $server_key = "AIzaSyAhsXKd8XTAuIz_KqxOJN6DqDg9etMl-TQ";
        // $this->db->order_by('id', 'desc');
-        $ambil = $this->db->get_where('fcm_info', array('nomer' => 1, ))->row();
-        echo $ambil;
+        $ambil = $this->M_api->get_keadaan('fcm_info', array('nomer' => 1, ));
+        echo $ambil->row();
         die;
         $key = $ambil[0];
         //echo $key;
