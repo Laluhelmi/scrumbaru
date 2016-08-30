@@ -729,6 +729,64 @@ class App extends REST_Controller {
           }
     }
 
+         public function recive_token_post()
+     {
+         # code...
+        $token = $this->post('fcm_token');
+        $object = ['fcm_token' => $token];
+        $insert = $this->db->insert('fcm_info', $object);
+        if ($insert) {
+            # code...
+            $this->response([
+                            'status' => TRUE,
+                            'pesan' => "server success recive token"
+                            ]);
+        } else {
+            # code...
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => "invalid recive token"
+                            ]);
+        }
+        
+     }
+     public function sender_notif_post()
+     {
+         # code...
+        $message = $this->post('message');
+        $title = $this->post('title');
+
+        $path_to_fcm = 'https://fcm.googleapis.com/fcm/send';
+        $server_key = "AIzaSyAhsXKd8XTAuIz_KqxOJN6DqDg9etMl-TQ";
+       // $this->db->order_by('id', 'desc');
+        $ambil = $this->db->get('fcm_info')->result();
+        $row = $ambil[0];
+        
+            $headers = array(
+                    'Authorization:key=' .$server_key ,
+                    'Content-Type:application/json'
+                    );
+
+            $fields = array('to' =>$key ,
+                            'notification' => array('title' =>$title ,
+                                                    'body' =>$message ));
+
+
+            $payload = json_encode($fields);
+
+            $curl_session = curl_init();
+            curl_setopt($curl_session, CURLOPT_URL, $path_to_fcm);
+            curl_setopt($curl_session, CURLOPT_POST, true);
+            curl_setopt($curl_session, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl_session, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl_session, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+            curl_setopt($curl_session, CURLOPT_POSTFIELDS, $payload);
+
+            $result = curl_exec($curl_session);
+
+     }
+
     // public function tes_daily_get()
     // {
     //     $q=$this->db->get_where('tb_message', array('tanggal' => date("y-m-d")  ))->result();
