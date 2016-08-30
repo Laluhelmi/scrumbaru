@@ -761,6 +761,8 @@ class App extends REST_Controller {
        // $this->db->order_by('id', 'desc');
         $ambil = $this->db->get('fcm_info')->result();
         $key = $ambil[0];
+        echo $key;
+        die;
         
             $headers = array(
                     'Authorization:key=' .$server_key ,
