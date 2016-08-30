@@ -760,7 +760,7 @@ class App extends REST_Controller {
         $server_key = "AIzaSyAhsXKd8XTAuIz_KqxOJN6DqDg9etMl-TQ";
        // $this->db->order_by('id', 'desc');
         $ambil = $this->M_api->get_keadaan('fcm_info', array('nomer' => 1, ));
-        echo $ambil->row();
+        print_r($ambil);
         die;
         $key = $ambil[0];
         //echo $key;
