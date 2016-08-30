@@ -142,79 +142,129 @@ class App extends REST_Controller {
 		 
 	}
 
-	#fungsi service yg digunakan untuk reset password
-	#menggunakan 2 inputan, token dan email
-	public function reset_pass_post()
-	{
-		$data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('reset_pass_post'));
-		$this->form_validation->set_data($data);
-		if ($this->form_validation->run('reset_pass_post') == false) {
-			$this->response([
-							'status' => FALSE,
-			 	  			'pesan' => $this->form_validation->get_errors_as_array()
-			 	  			], REST_Controller::HTTP_BAD_REQUEST);
-		} else {
-			$params = [
-						'token' => $this->post('token'),
-				   		'email' => $this->post('email')
-				   		];
-		
-			$q = $this->M_api->get_keadaan('tb_user', $params)->row();
-			$cek = $this->M_api->get_keadaan('tb_user', $params)->num_rows();
+	public function register_post()
+    {
+        $data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('register_post'));
 
-			if ($cek <= 0) {
-				
-				$this->response([
-								'status' => FALSE,
-							    'pesan' => 'User not registered !'
-							    ]);
+        $this->form_validation->set_data($data);
+        if ($this->form_validation->run('register_post') == false) {
+            # code...
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => $this->form_validation->get_errors_as_array()
+                            ], REST_Controller::HTTP_BAD_REQUEST);
+        } else {
+            $data = $this->post();
+            if ($this->M_api->get_data('tb_user', 'username', $data['username'])) {
+                $this->response([
+                                'status' => FALSE,
+                                'pesan' => 'username already exist'
+                                ], REST_Controller::HTTP_OK);
+            } else {
 
-			} else {
-				$email = $q->email;
+                $data['token'] = $this->token->encrypt($data['email']);
+                $temp = $this->M_api->register($data);
 
-				$new_pass = randomString();
+                if ($temp === TRUE) {
+                    # code...
+                    $to = $data['email'];
+                    $act_key = md5($this->M_api->select('tb_user','activation_key','email', $to)->activation_key);
+                    $subject = "Activation Account Scrum Project Management";
+                    $message = "<a href='http://scrum.alfatech.id/index.php/spm/activation?email=$to&activation_key=$act_key'>Click here</a> to activation your account!!";
+                    $this->sendmail($to, $subject, $message);
 
-				$object = ['password' => md5(md5($new_pass))];
-				
-				$query = $this->M_api->update('tb_user','email', $email, $object);
-				if ($query == TRUE ) {
+                    $this->response([
+                                'status' => TRUE,
+                                'pesan' => 'Your account is registered'
+                                ], REST_Controller::HTTP_CREATED);
+                } else {
+                    # code...
+                    $this->response([
+                                'status' => TRUE,
+                                'pesan' => 'Register is failed'
+                                ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                }
+                
+            }
 
-					$data = [
-							'email' => $email,
-					       	'password' => $new_pass
-					       	];
+        }
+        
+    }
 
-					$message = $this->parser->parse('email/resetpass', $data, TRUE);
-					$send = $this->sendmail($email, 'your New Password Scrum Project Management', $message);
+    #fungsi service yg digunakan untuk reset password
+    #menggunakan 2 inputan, token dan email
+    public function reset_pass_post()
+    {
+        $data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('reset_pass_post'));
+        $this->form_validation->set_data($data);
+        if ($this->form_validation->run('reset_pass_post') == false) {
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => $this->form_validation->get_errors_as_array()
+                            ], REST_Controller::HTTP_BAD_REQUEST);
+        } else {
+            $params = [
+                        // 'token' => $this->post('token'),
+                        'email' => $this->post('email')
+                        ];
+        
+            $q = $this->M_api->get_keadaan('tb_user', $params)->row();
+            $cek = $this->M_api->get_keadaan('tb_user', $params)->num_rows();
 
-					if ($send == TRUE) {
+            if ($cek <= 0) {
+                
+                $this->response([
+                                'status' => FALSE,
+                                'pesan' => 'User not registered !'
+                                ]);
 
-						$this->response([
-										'status' => TRUE,
-							            'pesan' => 'The new password has been sent to your email !'
-							            ], REST_Controller::HTTP_CREATED);
+            } else {
+                $email = $q->email;
 
-					} else {
+                $new_pass = randomString();
 
-						$this->response([
-										'status' => FALSE,
-							            'pesan' => 'Reset password is failed, please contact administrator !'
-							           	], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                $object = ['password' => md5(md5($new_pass))];
+                
+                $query = $this->M_api->update('tb_user','email', $email, $object);
+                if ($query == TRUE ) {
 
-					}
-					
-				} else {
+                    $data = [
+                            'email' => $email,
+                            'password' => $new_pass
+                            ];
 
-					$this->response([
-									'status' => FALSE,
-							        'pesan' => 'User not registered !'
-							        ], REST_Controller::HTTP_OK);
+                    $message = $this->parser->parse('email/resetpass', $data, TRUE);
 
-				}
-			}
-		}	
-		
-	}
+                    $send = $this->sendmail($email, 'your New Password Scrum Project Management', $message);
+
+                    if ($send == TRUE) {
+
+                        $this->response([
+                                        'status' => TRUE,
+                                        'pesan' => 'The new password has been sent to your email !'
+                                        ], REST_Controller::HTTP_CREATED);
+
+                    } else {
+
+                        $this->response([
+                                        'status' => FALSE,
+                                        'pesan' => 'Reset password is failed, please contact administrator !'
+                                        ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+
+                    }
+                    
+                } else {
+
+                    $this->response([
+                                    'status' => FALSE,
+                                    'pesan' => 'User not registered !'
+                                    ], REST_Controller::HTTP_OK);
+
+                }
+            }
+        }   
+        
+    }
 
 	#fungsi service yang di gunakan untk menampilkan dashboard scrum berdasarkan projek yg diikuti oleh user tersebut 'done'
 	public function dashboard_scrum_get($token=null)

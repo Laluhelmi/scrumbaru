@@ -20,17 +20,6 @@ class M_api extends CI_Model {
 		$this->db->insert($table, $data);
 		return TRUE;
 	}
-	
-	public function list_baru($table, $where, $limit, $order,$order_type)
-	{	
-		$this->db->select('tb_user.username, tb_notif.jabatan, tb_notif.status, tb_notif.waktu, tb_project.judul');
-		$this->db->join('tb_user', 'tb_user.id_user = tb_notif.id_inviter');
-		$this->db->join('tb_project', 'tb_project.id_project = tb_notif.id_project');
-    	$this->db->where($where);
-		$this->db->order_by($order,$order_type);
-		$data = $this->db->get($table, $limit);
-		return $data->num_rows() > 0 ? $data->result() : FALSE;
-	}
 
 	// public function get($table, $kolom, $order_type)
 	// {
@@ -52,12 +41,12 @@ class M_api extends CI_Model {
 	// 	return $data->num_rows() > 0 ? $data->result() : false;
 	// }
 
-	// public function select($table,$select, $where, $value){
-	// 	$this->db->select($select);
-	// 	$this->db->where($where, $value);
-	// 	$data = $this->db->get($table);
-	// 	return $data->first_row();
-	// }
+	public function select($table,$select, $where, $value){
+		$this->db->select($select);
+		$this->db->where($where, $value);
+		$data = $this->db->get($table);
+		return $data->first_row();
+	}
 
 	// public function get_list_join($table1, $table2, $where1, $where2, $like, $like_value, $kolom, $order_type, $num, $offset)
 	// {
@@ -107,16 +96,26 @@ class M_api extends CI_Model {
         $query = $this->db->get();
         return $query;
 	}
+	public function list_baru($table, $where, $limit, $order,$order_type)
+	{	
+		$this->db->select('tb_user.username, tb_notif.jabatan, tb_notif.status, tb_notif.waktu, tb_project.judul');
+		$this->db->join('tb_user', 'tb_user.id_user = tb_notif.id_inviter');
+		$this->db->join('tb_project', 'tb_project.id_project = tb_notif.id_project');
+    	$this->db->where($where);
+		$this->db->order_by($order,$order_type);
+		$data = $this->db->get($table, $limit);
+		return $data->num_rows() > 0 ? $data->result() : FALSE;
+	}
 
 	public function get_join_tim($id_project)
 	{
 		$this->db->select('username, jabatan');
         $this->db->from('tb_tim');
-        $this->db->join('tb_user', 'tb_user.id_user = tb_tim.id_user');
-        $this->db->where('id_project', $id_project);
-        $query = $this->db->get();
-        return $query;
-	}
+         $this->db->join('tb_user', 'tb_user.id_user = tb_tim.id_user');
+         $this->db->where('id_project', $id_project);
+       $query = $this->db->get();
+         return $query;
+	 }
 
 	// public function get_join_notif()
 	// {
@@ -165,7 +164,7 @@ class M_api extends CI_Model {
         $data = array();
         //$this->db->distinct();
 
-        $this->db->select('distinct(judul), tb_project.id_project, deskripsi, tb_project.started_date, tb_project.finished_date, tb_project.created');
+        $this->db->select('distinct(judul), tb_project.id_project, deskripsi, tb_project.started_date, tb_project.finished_date, tb_project.created, tb_project.enkrip_name');
     $this->db->join($table1, "$table1.$requirement1 = $table3.$requirement1");
     $this->db->join($table2, "$table2.$requirement2 = $table3.$requirement2");
     $this->db->where($where, $value);
@@ -249,6 +248,30 @@ class M_api extends CI_Model {
 		$query = $this->db->get_where($table, $params);
 		return $query;
 	}
+	public function get_data($table, $where, $value)
+	{
+		$this->db->where($where, $value);
+		$temp = $this->db->get($table);
+		$data = $temp->first_row();
+		return $data;
+	}
+
+	public function register($data)
+  	{
+    # code...
+	    $this->db->where('email', $data['email']);
+	    $temp = $this->db->get('tb_user');
+	    if($temp->num_rows() > 0){
+	      $message['error'] = "Email is already exist!!";
+	      return $message;
+    	}else {
+      # code...
+	      $data['password'] = md5(md5($data['password']));
+	      $data['activation_key'] = md5($data['email'].date("Y/m/d"));
+	      $this->db->insert('tb_user', $data);
+	      return $this->db->insert_id() ? TRUE : FALSE;
+    	}
+  	}
 
 }
 
