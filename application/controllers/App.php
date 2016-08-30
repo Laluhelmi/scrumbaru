@@ -761,7 +761,7 @@ class App extends REST_Controller {
        // $this->db->order_by('id', 'desc');
         $ambil = $this->db->get('fcm_info', array('nomer' => 1, ))->row();
         
-        $key = $ambil->token;
+        $key = $ambil->fcm_token;
         echo $key;
         die;
         
