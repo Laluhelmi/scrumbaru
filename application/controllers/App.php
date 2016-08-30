@@ -760,7 +760,7 @@ class App extends REST_Controller {
         $server_key = "AIzaSyAhsXKd8XTAuIz_KqxOJN6DqDg9etMl-TQ";
        // $this->db->order_by('id', 'desc');
         $ambil = $this->db->get('fcm_info')->result();
-        $row = $ambil[0];
+        $key = $ambil[0];
         
             $headers = array(
                     'Authorization:key=' .$server_key ,
