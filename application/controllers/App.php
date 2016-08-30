@@ -762,8 +762,7 @@ class App extends REST_Controller {
         $ambil = $this->db->get('fcm_info', array('nomer' => 1, ))->row();
         
         $key = $ambil->fcm_token;
-        echo $key;
-        die;
+        
         
             $headers = array(
                     'Authorization:key=' .$server_key ,
