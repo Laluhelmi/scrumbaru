@@ -747,7 +747,7 @@ class App extends REST_Controller {
         } else {
             # code...
             $data = $cek_user->row();
-            $id_user = $data['id_user'];
+            $id_user = $data->id_user;
             $object = ['fcm_token' => $token,
                         'id_user' => $id_user];
             $insert = $this->db->insert('fcm_info', $object);
