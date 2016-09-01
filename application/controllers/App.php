@@ -732,39 +732,49 @@ class App extends REST_Controller {
          public function recive_token_post()
      {
          # code...
-        $token = $this->post('fcm_token');
-        $token_user = $this->post('token_user');
-        $params = ['token' => $token_user];
-
-        $cek_user = $this->M_api->get_keadaan('tb_user',$params);
-        $cek = $cek_user->num_rows();
-        if ($cek <= 0) {
-            # code...
+        $data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('recive_token_post'));
+        $this->form_validation->set_data($data);
+        if ($this->form_validation->run('recive_token_post') == false) {
             $this->response([
                             'status' => FALSE,
-                            'pesan' => 'token not registered'
-                            ], REST_Controller::HTTP_OK);
+                            'pesan' => $this->form_validation->get_errors_as_array()
+                            ]);
         } else {
-            # code...
-            $data = $cek_user->row();
-            $id_user = $data->id_user;
-            $object = ['fcm_token' => $token,
-                        'id_user' => $id_user];
-            $insert = $this->db->insert('fcm_info', $object);
-            if ($insert) {
-                # code...
-                $this->response([
-                                'status' => TRUE,
-                                'pesan' => "server success recive token"
-                                ], REST_Controller::HTTP_CREATED);
-            } else {
+            $token = $this->post('fcm_token');
+            $token_user = $this->post('token_user');
+            $params = ['token' => $token_user];
+
+            $cek_user = $this->M_api->get_keadaan('tb_user',$params);
+            $cek = $cek_user->num_rows();
+            if ($cek <= 0) {
                 # code...
                 $this->response([
                                 'status' => FALSE,
-                                'pesan' => "invalid recive token"
-                                ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                                'pesan' => 'token not registered'
+                                ], REST_Controller::HTTP_OK);
+            } else {
+                # code...
+                $data = $cek_user->row();
+                $id_user = $data->id_user;
+                $object = ['fcm_token' => $token,
+                            'id_user' => $id_user];
+                $insert = $this->db->insert('fcm_info', $object);
+                if ($insert) {
+                    # code...
+                    $this->response([
+                                    'status' => TRUE,
+                                    'pesan' => "server success recive token"
+                                    ], REST_Controller::HTTP_CREATED);
+                } else {
+                    # code...
+                    $this->response([
+                                    'status' => FALSE,
+                                    'pesan' => "invalid recive token"
+                                    ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                }
             }
         }
+        
         
         
         

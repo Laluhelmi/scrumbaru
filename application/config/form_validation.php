@@ -22,6 +22,11 @@ $config = array(
 			array('field'=>'password','label'=>'password','rules'=>'trim|required|min_length[6]|max_length[12]'),
 			array('field'=>'username','label'=>'username','rules'=>'trim|required'),
 		),
+		'recive_token_post' => array(
+			array('field'=>'fcm_token','label'=>'fcm_token','rules'=>'trim|required'),
+			array('field'=>'token_user','label'=>'token_user','rules'=>'trim|required'),
+		),
+
 	);
 
  ?>
