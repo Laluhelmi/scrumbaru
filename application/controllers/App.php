@@ -733,21 +733,40 @@ class App extends REST_Controller {
      {
          # code...
         $token = $this->post('fcm_token');
-        $object = ['fcm_token' => $token];
-        $insert = $this->db->insert('fcm_info', $object);
-        if ($insert) {
-            # code...
-            $this->response([
-                            'status' => TRUE,
-                            'pesan' => "server success recive token"
-                            ]);
-        } else {
+        $token_user = $this->post('token_user');
+        $params = ['token' => $token_user];
+
+        $cek_user = $this->M_api->get_keadaan('tb_user',$params);
+        $cek = $cek_user->num_rows();
+        if ($cek <= 0) {
             # code...
             $this->response([
                             'status' => FALSE,
-                            'pesan' => "invalid recive token"
-                            ]);
+                            'pesan' => 'token not registered'
+                            ], REST_Controller::HTTP_OK);
+        } else {
+            # code...
+            $data = $cek_user->row();
+            $id_user = $data['id_user'];
+            $object = ['fcm_token' => $token,
+                        'id_user' => $id_user];
+            $insert = $this->db->insert('fcm_info', $object);
+            if ($insert) {
+                # code...
+                $this->response([
+                                'status' => TRUE,
+                                'pesan' => "server success recive token"
+                                ], REST_Controller::HTTP_CREATED);
+            } else {
+                # code...
+                $this->response([
+                                'status' => FALSE,
+                                'pesan' => "invalid recive token"
+                                ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            }
         }
+        
+        
         
      }
      public function sender_notif_post()
