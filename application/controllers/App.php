@@ -705,9 +705,16 @@ class App extends REST_Controller {
     { 
     
     $config = Array(
+        // 'protocol' => 'smtp',
+        // 'smtp_host' => 'ssl://smtp.googlemail.com',
+        // 'smtp_port' => 465,
+        // 'smtp_timeout' => 30,
+        // 'smtp_user' => 'scrumprojectmanagements@gmail.com', // change it to yours
+        // 'smtp_pass' => 'kodingskripsi12', // change it to yours
         'protocol' => 'smtp',
         'smtp_host' => 'ssl://ellie.rapidplex.com',
         'smtp_port' => 465,
+        'smtp_timeout' => 30,
         'smtp_user' => 'scrum@alfatech.id', // change it to yours
         'smtp_pass' => 'scrum2016', // change it to yours
         'mailtype' => 'html',
@@ -717,19 +724,20 @@ class App extends REST_Controller {
 
       $this->load->library('email', $config);
       $this->email->set_newline("\r\n");
-      $this->email->from('info@scrum.karanglo.net','No Replay'); // change it to yours
+      $this->email->from('info@scrum.alfatech.id','No Replay'); // change it to yours
       $this->email->to($to);// change it to yours
       $this->email->subject($subject);
       $this->email->message($message);
-          if($this->email->send())
-          {
-            return TRUE;
-          }else{
-            return FALSE;
-          }
+      if($this->email->send())
+      {
+        return TRUE;
+      }else{
+        return FALSE;
+        //  return show_error($this->email->print_debugger());
+      }
     }
 
-         public function recive_token_post()
+    public function recive_token_post()
      {
          # code...
         $data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('recive_token_post'));
@@ -753,25 +761,39 @@ class App extends REST_Controller {
                                 'pesan' => 'token not registered'
                                 ], REST_Controller::HTTP_OK);
             } else {
-                # code...
-                $data = $cek_user->row();
-                $id_user = $data->id_user;
-                $object = ['fcm_token' => $token,
-                            'id_user' => $id_user];
-                $insert = $this->db->insert('fcm_info', $object);
-                if ($insert) {
+                $token_fcm = ['fcm_token' => $token];
+                $cek_token_fcm = $this->M_api->get_keadaan('fcm_info',$token_fcm);
+
+                $cek_fcm = $token_fcm->num_rows();
+                if ($cek_fcm == 0) {
                     # code...
-                    $this->response([
-                                    'status' => TRUE,
-                                    'pesan' => "server success recive token"
-                                    ], REST_Controller::HTTP_CREATED);
+                    $data = $cek_user->row();
+                    $id_user = $data->id_user;
+                    $object = ['fcm_token' => $token,
+                                'id_user' => $id_user];
+                    $insert = $this->db->insert('fcm_info', $object);
+                    if ($insert) {
+                        # code...
+                        $this->response([
+                                        'status' => TRUE,
+                                        'pesan' => "server success recive token"
+                                        ], REST_Controller::HTTP_CREATED);
+                    } else {
+                        # code...
+                        $this->response([
+                                        'status' => FALSE,
+                                        'pesan' => "invalid recive token"
+                                        ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                }
                 } else {
                     # code...
                     $this->response([
-                                    'status' => FALSE,
-                                    'pesan' => "invalid recive token"
-                                    ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                                        'status' => TRUE,
+                                        'pesan' => "server success recive token"
+                                        ]);
                 }
+                
+               
             }
         }
         
