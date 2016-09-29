@@ -76,7 +76,7 @@ class M_api extends CI_Model {
 
 	public function get_join_message($id_projek)
 	{
-		$this->db->select('message, tanggal, jam, username');
+		$this->db->select('message, tanggal, jam, username, daily_scrum');
         $this->db->from('tb_message');
         $this->db->join('tb_user', 'tb_user.id_user = tb_message.id_user');
         $this->db->where('id_project', $id_projek);
