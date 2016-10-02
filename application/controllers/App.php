@@ -324,78 +324,254 @@ class App extends REST_Controller {
     }
 
     #fungsi service yg digunakan untuk mengirim chat di dalam tiap projek, dengan parameter id projek, dan token,
-	public function kirim_chat_post($projek = null , $user = null)
-    {
-    	if ($projek != null && $user !=null) {
+	// public function kirim_chat_post($projek = null , $user = null)
+ //    {
+ //    	if ($projek != null && $user !=null) {
 
-			$projek = $this->uri->segment(3);
-    		$token = $this->uri->segment(4);
+	// 		$projek = $this->uri->segment(3);
+ //    		$token = $this->uri->segment(4);
 
-    		$cek_project = $this->M_api->get_keadaan('tb_project', array('id_project' => $projek,))->num_rows();
-    		if ($cek_project<1) {
-    			$this->response([
-    							'status' => FALSE,
-    				   			'pesan' => 'project not found'
-    				   			], REST_Controller::HTTP_OK);
-    		}
+ //    		$cek_project = $this->M_api->get_keadaan('tb_project', array('id_project' => $projek,))->num_rows();
+ //    		if ($cek_project<1) {
+ //    			$this->response([
+ //    							'status' => FALSE,
+ //    				   			'pesan' => 'project not found'
+ //    				   			], REST_Controller::HTTP_OK);
+ //    		}
     		
-    		$data_token = ['token' => $token];
+ //    		$data_token = ['token' => $token];
 
-    		$cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
-    		$id_user = $cek_token->row()->id_user; 
+ //    		$cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
+ //    		$id_user = $cek_token->row()->id_user; 
 
-    		if ($cek_token->num_rows() < 1) {
+ //    		if ($cek_token->num_rows() < 1) {
 
-    			$this->response([
-    							'status' => FALSE,
-    				   			'pesan' => 'Token Is not correct'
-    				   			], REST_Controller::HTTP_BAD_REQUEST);
+ //    			$this->response([
+ //    							'status' => FALSE,
+ //    				   			'pesan' => 'Token Is not correct'
+ //    				   			], REST_Controller::HTTP_BAD_REQUEST);
 
-    		} else {
+ //    		} else {
 
-    			$data_projek = ['id_project' => $projek];
+ //    			$data_projek = ['id_project' => $projek];
 
-    			$data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('kirim_chat_post'));
-    			$this->form_validation->set_data($data);
-    			if ($this->form_validation->run('kirim_chat_post') == false) {
-    				$this->response(['status' => FALSE,
-			 	  					'pesan'=>$this->form_validation->get_errors_as_array()], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
-    			} else {
+ //    			$data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('kirim_chat_post'));
+ //    			$this->form_validation->set_data($data);
+ //    			if ($this->form_validation->run('kirim_chat_post') == false) {
+ //    				$this->response(['status' => FALSE,
+	// 		 	  					'pesan'=>$this->form_validation->get_errors_as_array()], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+ //    			} else {
     				
-    				$inputan = [
-    						'message' => $this->post('message'),
-                            'daily_scrum' => $this->post('daily_scrum'),
-    						// 'id_cr' => $id_cr,
-    						'id_user' => $id_user,
-    						'id_project' => $projek,
+ //    				$inputan = [
+ //    						'message' => $this->post('message'),
+ //                            'daily_scrum' => $this->post('daily_scrum'),
+ //    						// 'id_cr' => $id_cr,
+ //    						'id_user' => $id_user,
+ //    						'id_project' => $projek,
+ //                            'tanggal' => date("Y-m-d"),
+ //                            'jam' => gmdate("h:i:sa", time()+60*60*7)
+ //    						];
+ //                            //date("h:i:sa")
+	//     			$query_input = $this->M_api->insert_pesan('tb_message', $inputan);
+	    			
+	//     			if ($query_input == TRUE) {
+	//     				$this->response([
+	//     								'status' => TRUE,
+	//     				   				'pesan' => 'Send Message success'
+	//     				   				], REST_Controller::HTTP_CREATED);
+	//     			} else {
+	//     				$this->response([
+	//     								'status' => FALSE,
+	//     				   				'pesan' => 'Send Message Fail'
+	//     				   				], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+	//     			}
+ //    			}	
+    			
+ //    		}
+
+	// 	} else {
+
+	// 		$this->response([
+	// 						'status' => FALSE,
+	// 						'pesan' => 'error unknow'
+	// 						], REST_Controller::HTTP_BAD_REQUEST);
+	// 	}
+ //    }
+        public function kirim_chat_post($projek = null , $user = null)
+    {
+        if ($projek != null && $user !=null) {
+
+            $projek = $this->uri->segment(3);
+            $token = $this->uri->segment(4);
+
+            $cek_project = $this->M_api->get_keadaan('tb_project', array('id_project' => $projek,))->num_rows();
+            if ($cek_project<1) {
+                $this->response([
+                                'status' => FALSE,
+                                'pesan' => 'project not found'
+                                ], REST_Controller::HTTP_OK);
+            }
+            
+            $data_token = ['token' => $token];
+
+            $cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
+            $id_user = $cek_token->row()->id_user; 
+
+            if ($cek_token->num_rows() < 1) {
+
+                $this->response([
+                                'status' => FALSE,
+                                'pesan' => 'Token Is not correct'
+                                ], REST_Controller::HTTP_BAD_REQUEST);
+
+            } else {
+
+                $data_projek = ['id_project' => $projek];
+
+                $data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('kirim_chat_post'));
+                $this->form_validation->set_data($data);
+                if ($this->form_validation->run('kirim_chat_post') == false) {
+                    $this->response(['status' => FALSE,
+                                    'pesan'=>$this->form_validation->get_errors_as_array()], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                } else {
+                    $cek_daily = $this->M_api->get_cek_join_message($projek)->row();
+                    // print_r($cek_daily);
+                    // die;
+                    $status_daily = $cek_daily->daily_scrum;
+                    // echo $status_daily;
+                    // die;
+                    if ($status_daily == "1") {
+                        //echo "satu";
+                        $inputan = [
+                            'message' => $this->post('message'),
+                            'daily_scrum' => "1",
+                            // 'id_cr' => $id_cr,
+                            'id_user' => $id_user,
+                            'id_project' => $projek,
                             'tanggal' => date("Y-m-d"),
                             'jam' => gmdate("h:i:sa", time()+60*60*7)
-    						];
+                            ];
                             //date("h:i:sa")
-	    			$query_input = $this->M_api->insert_pesan('tb_message', $inputan);
-	    			
-	    			if ($query_input == TRUE) {
-	    				$this->response([
-	    								'status' => TRUE,
-	    				   				'pesan' => 'Send Message success'
-	    				   				], REST_Controller::HTTP_CREATED);
-	    			} else {
-	    				$this->response([
-	    								'status' => FALSE,
-	    				   				'pesan' => 'Send Message Fail'
-	    				   				], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
-	    			}
-    			}	
-    			
-    		}
+                        $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
+                        
+                        if ($query_input == TRUE) {
+                            $this->response([
+                                            'status' => TRUE,
+                                            'pesan' => 'Send Message success'
+                                            ], REST_Controller::HTTP_CREATED);
+                        } else {
+                            $this->response([
+                                            'status' => FALSE,
+                                            'pesan' => 'Send Message Fail'
+                                            ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                        }
+                    } else {
+                        //echo "dua";
+                        $inputan = [
+                            'message' => $this->post('message'),
+                            'daily_scrum' => "0",
+                            // 'id_cr' => $id_cr,
+                            'id_user' => $id_user,
+                            'id_project' => $projek,
+                            'tanggal' => date("Y-m-d"),
+                            'jam' => gmdate("h:i:sa", time()+60*60*7)
+                            ];
+                            //date("h:i:sa")
+                    $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
+                    
+                    if ($query_input == TRUE) {
+                        $this->response([
+                                        'status' => TRUE,
+                                        'pesan' => 'Send Message success'
+                                        ], REST_Controller::HTTP_CREATED);
+                    } else {
+                        $this->response([
+                                        'status' => FALSE,
+                                        'pesan' => 'Send Message Fail'
+                                        ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                    }
+                    }
+                    
+                    
+                }   
+                
+            }
 
-		} else {
+        } else {
 
-			$this->response([
-							'status' => FALSE,
-							'pesan' => 'error unknow'
-							], REST_Controller::HTTP_BAD_REQUEST);
-		}
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'error unknow'
+                            ], REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function set_on_dailyscrum_post()
+    {
+        # code...
+        $projek = $this->uri->segment(3);
+        $token = $this->uri->segment(4);
+        $data_token = ['token' => $token];
+
+            $cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
+            $id_user = $cek_token->row()->id_user; 
+        $inputan = [
+                    'message' => $this->post('message'),
+                    'daily_scrum' => "1",
+                    // 'id_cr' => $id_cr,
+                    'id_user' => $id_user,
+                    'id_project' => $projek,
+                    'tanggal' => date("Y-m-d"),
+                    'jam' => gmdate("h:i:sa", time()+60*60*7)
+                            ];
+                            //date("h:i:sa")
+            $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
+                        
+            if ($query_input == TRUE) {
+                $this->response([
+                                'status' => TRUE,
+                                'pesan' => 'Set On success'
+                                ], REST_Controller::HTTP_CREATED);
+            } else {
+                $this->response([
+                                'status' => FALSE,
+                                'pesan' => 'Set On Fail'
+                                ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            }
+    }
+
+    public function set_off_dailyscrum_post()
+    {
+        # code...
+        $projek = $this->uri->segment(3);
+        $token = $this->uri->segment(4);
+        $data_token = ['token' => $token];
+
+            $cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
+            $id_user = $cek_token->row()->id_user; 
+        $inputan = [
+                    'message' => $this->post('message'),
+                    'daily_scrum' => "0",
+                    // 'id_cr' => $id_cr,
+                    'id_user' => $id_user,
+                    'id_project' => $projek,
+                    'tanggal' => date("Y-m-d"),
+                    'jam' => gmdate("h:i:sa", time()+60*60*7)
+                            ];
+                            //date("h:i:sa")
+            $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
+                        
+            if ($query_input == TRUE) {
+                $this->response([
+                                'status' => TRUE,
+                                'pesan' => 'Set Off success'
+                                ], REST_Controller::HTTP_CREATED);
+            } else {
+                $this->response([
+                                'status' => FALSE,
+                                'pesan' => 'Set Off Fail'
+                                ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            }
     }
 
     #fungsi service yg digunakan untuk mengambil data chat berdasarkan projek yg di tentukan dari parameter id projek "done"

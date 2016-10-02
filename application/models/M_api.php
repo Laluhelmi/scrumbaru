@@ -85,6 +85,19 @@ class M_api extends CI_Model {
         $query = $this->db->get();
         return $query;
 	}
+	public function get_cek_join_message($id_projek)
+	{
+		$this->db->select('message, tanggal, jam, username, daily_scrum');
+        $this->db->from('tb_message');
+        $this->db->join('tb_user', 'tb_user.id_user = tb_message.id_user');
+        $this->db->where('id_project', $id_projek);
+        $this->db->where('tanggal', date("Y-m-d"));
+        $this->db->order_by('jam', 'DESC');
+        $this->db->limit(1);
+        $query = $this->db->get();
+        return $query;
+	}
+	
 	public function get_join_message_bydate($id_projek, $tanggal)
 	{
 		$this->db->select('message, tanggal, jam, username');
