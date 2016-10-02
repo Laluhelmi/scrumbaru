@@ -364,6 +364,7 @@ class App extends REST_Controller {
     				
     				$inputan = [
     						'message' => $this->post('message'),
+                            'daily_scrum' => $this->post('daily_scrum'),
     						// 'id_cr' => $id_cr,
     						'id_user' => $id_user,
     						'id_project' => $projek,
