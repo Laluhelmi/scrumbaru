@@ -105,6 +105,7 @@ class M_api extends CI_Model {
         $this->db->join('tb_user', 'tb_user.id_user = tb_message.id_user');
         $this->db->where('id_project', $id_projek);
         $this->db->where('tanggal', $tanggal);
+        $this->db->where('daily_scrum', "1");
         $this->db->order_by('tanggal', 'asc');
         $query = $this->db->get();
         return $query;
