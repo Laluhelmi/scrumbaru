@@ -216,7 +216,7 @@ class M_api extends CI_Model {
 
 	public function get_join_three_table_sprint_status($table1, $table2, $table3, $requirement1, $requirement2, $where, $value, $colum, $order_type, $status){
         $data = array();
-	        $this->db->select('tb_user.email, tb_user.username, tb_sprint.task, tb_sprint.estimasi, tb_sprint.tgl_mulai, tb_sprint.tgl_selesai, tb_sprint.developer');
+	        $this->db->select('tb_user.email, tb_user.username, tb_sprint.task, tb_sprint.estimasi, tb_sprint.tgl_mulai, tb_sprint.tgl_selesai, tb_sprint.developer, tb_sprint.tgl_mulai_real');
 	    $this->db->join($table1, "$table1.$requirement1 = $table3.$requirement1");
 	    $this->db->join($table2, "$table2.$requirement2 = $table3.$requirement2");
 	    $this->db->join('tb_user', 'tb_sprint.developer = tb_user.id_user');
