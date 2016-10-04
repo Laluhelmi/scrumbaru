@@ -698,6 +698,44 @@ class App extends REST_Controller {
     	}
     }
 
+    public function cek_tim_by_project_get($id_project=null)
+    {
+        $token =$this->uri->segment(4);
+        $id_project = $this->uri->segment(3);
+        $cek_project = $this->M_api->get_keadaan('tb_project', array('id_project' => $id_project, ))->num_rows();
+        if ($cek_project < 1) {
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'unknow project'
+                            ], REST_Controller::HTTP_OK);
+        }
+        if ($id_project != null) {
+            $param = ['token' => $token];
+            $cek_jabatan = $this->db->get_where('tb_user', $param)->row();
+            $id_user = $cek_jabatan->id_user;
+            
+            $query = $this->M_api->cek_join_tim($id_project, $id_user);
+            
+            if ($query->num_rows() <= 0) {
+                $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'not SM'
+                            ], REST_Controller::HTTP_OK);
+            } else {
+                $data = $query->result();
+                $this->response([
+                            'status' => TRUE,
+                            'pesan' => 'SM'
+                            ], REST_Controller::HTTP_OK);
+            }
+        } else {
+            $this->response([
+                            'status' => FALSE,
+                            'pesan' => 'method unknow'
+                            ], REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
     public function show_all_sprint_get($id_project = null )
     {
         

@@ -21,6 +21,19 @@ class M_api extends CI_Model {
 		return TRUE;
 	}
 
+	 public function cek_join_tim($id_project, $id_user)
+	{
+		$jabatan = "Scrum Master";
+		$this->db->select('username, jabatan, tb_tim.id_user');
+        $this->db->from('tb_tim');
+         $this->db->join('tb_user', 'tb_user.id_user = tb_tim.id_user');
+         $this->db->where('id_project', $id_project);
+         $this->db->where('tb_tim.id_user', $id_user);
+         $this->db->where('tb_tim.jabatan', $jabatan);
+       $query = $this->db->get();
+         return $query;
+	 }
+
 	// public function get($table, $kolom, $order_type)
 	// {
 	// 	$this->db->order_by($kolom, $order_type);
