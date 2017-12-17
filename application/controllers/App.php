@@ -32,8 +32,44 @@ class App extends REST_Controller {
 
 	 }
 
+	 public function getProjectType_get($value='')
+	 {
+	 		$data = $this->M_api->getProjectType();
+			$this->response([
+							'status' => TRUE,
+								'pesan' => $data
+								 ], REST_Controller::HTTP_OK);
+	 }
+
+	 public function tambahprojek_post(){
+		 $nama 			 		= $this->post('judul');
+		 $jenis			 		= $this->post("jenis");
+		 $deskripsi  		= $this->post('deskripsi');
+		 $manhours 		  = $this->post('man_hours');
+		 $jenis					= $this->post('jenis');
+		 $workinghours  = $this->post('jamkerja');
+		 $jammulai      = date("Y-m-d H:i:s", strtotime($this->post('jammulai')));
+		 $token 		  	= '29c79431a16968b5eeae35cd314dab2f';
+		 if($this->post('man_hours') != null){
+			 $data  = array("nama_jenisproyek" => $jenis,"nilai_phm" => $this->post('man_hours'));
+			 $jenis = $this->M_api->insertNewProjectType($data);
+		 }
+		 $param = $this->M_api->get_keadaan('tb_user',array('token' => $token));
+		 $iduser				= $param->result()[0]->id_user;
+		 $dataProject = array('judul' 					=> $nama,
+	 												'id_jenisproyek'  => $jenis,
+													'deskripsi'				=> $deskripsi,
+												  'working_hours'   => $workinghours,
+													'started_date'    => $jammulai,
+												  'id_user'					=> $iduser);
+			$jabatan  = $this->post("jabatan");
+			$dataTeam['jabatan'] = $jabatan;
+			$dataTeam['id_user'] = $iduser;
+			$id = $this->M_api->insert_project_and_team($dataProject,$dataTeam);
+			//echo $jabatan;
+	 }
 	 public function login_post()
-	 {	
+	 {
 	 	$data = remove_unknown_fields($this->post(), $this->form_validation->get_field_names('login_post'));
 	 	$this->form_validation->set_data($data);
 	 	if ($this->form_validation->run('login_post') == false) {
@@ -48,7 +84,7 @@ class App extends REST_Controller {
 	 	    	   	'password' => md5(md5($this->post('password')))
 	 	    	   	];
 
-	 		$query = $this->M_api->get_keadaan('tb_user', $params); #model berisi query mencocokan data yang di iputkan  	   
+	 		$query = $this->M_api->get_keadaan('tb_user', $params); #model berisi query mencocokan data yang di iputkan
 	 		$cek = $query->num_rows();
 	 		if ($cek < 1) {
 
@@ -67,7 +103,7 @@ class App extends REST_Controller {
 	 				   			'pesan' => array('token'=>$token,)
 	 				   			], REST_Controller::HTTP_OK);
 	 		}
-	 	}	
+	 	}
 	 }
 
 	public function profile_get()
@@ -112,7 +148,7 @@ class App extends REST_Controller {
 				   		   'first_name' => $this->post('first_name'),
 				   		   'last_name' => $this->post('last_name'),
 				   		 	];
-				
+
 					$query = $this->M_api->update('tb_user','token', $token, $params);
 					if ($query == FALSE) {
 
@@ -132,14 +168,14 @@ class App extends REST_Controller {
 								'status' => FALSE,
 				 	  			'pesan' => 'unkwon token'
 				 	  			], REST_Controller::HTTP_BAD_REQUEST);
-			}	
+			}
 		} else {
 			$this->response([
 								'status' => FALSE,
 				 	  			'pesan' => 'unknow method'
 				 	  			], REST_Controller::HTTP_BAD_REQUEST);
 		}
-		 
+
 	}
 
 	public function register_post()
@@ -184,11 +220,11 @@ class App extends REST_Controller {
                                 'pesan' => 'Register is failed'
                                 ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
                 }
-                
+
             }
 
         }
-        
+
     }
 
     #fungsi service yg digunakan untuk reset password
@@ -207,12 +243,12 @@ class App extends REST_Controller {
                         // 'token' => $this->post('token'),
                         'email' => $this->post('email')
                         ];
-        
+
             $q = $this->M_api->get_keadaan('tb_user', $params)->row();
             $cek = $this->M_api->get_keadaan('tb_user', $params)->num_rows();
 
             if ($cek <= 0) {
-                
+
                 $this->response([
                                 'status' => FALSE,
                                 'pesan' => 'User not registered !'
@@ -224,7 +260,7 @@ class App extends REST_Controller {
                 $new_pass = randomString();
 
                 $object = ['password' => md5(md5($new_pass))];
-                
+
                 $query = $this->M_api->update('tb_user','email', $email, $object);
                 if ($query == TRUE ) {
 
@@ -252,7 +288,7 @@ class App extends REST_Controller {
                                         ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
 
                     }
-                    
+
                 } else {
 
                     $this->response([
@@ -262,8 +298,8 @@ class App extends REST_Controller {
 
                 }
             }
-        }   
-        
+        }
+
     }
 
 	#fungsi service yang di gunakan untk menampilkan dashboard scrum berdasarkan projek yg diikuti oleh user tersebut 'done'
@@ -271,11 +307,11 @@ class App extends REST_Controller {
     {
     	$token = $this->uri->segment(3);
 
-    	
+
     		$paramas = ['token' => $token];
     		$ambil_id = $this->M_api->get_keadaan('tb_user', $paramas);
     		$cek = $ambil_id->num_rows();
-            
+
     		if ($cek <= 0) {
     			$this->response([
     							'status' => FALSE,
@@ -283,14 +319,14 @@ class App extends REST_Controller {
     		} else {
     			$id_user = $ambil_id->row()->id_user;
                 $card= $this->M_api->get_join_three_table("tb_user", "tb_tim", "tb_project", "id_user", "id_project", "tb_tim.id_user", $id_user, "created", "asc");
-            
+
                 if($card){
-                  
+
                 $this->response([
                                     'status' => TRUE,
                                     'pesan' => $card], REST_Controller::HTTP_OK);
                 } else {
-                
+
                 $this->response([
                                 'status' => FALSE,
                                 'pesan' => 'empty project'], REST_Controller::HTTP_OK);
@@ -320,7 +356,7 @@ class App extends REST_Controller {
                                 'pesan' => $query], REST_Controller::HTTP_OK);
             }
         }
-            
+
     }
 
     #fungsi service yg digunakan untuk mengirim chat di dalam tiap projek, dengan parameter id projek, dan token,
@@ -338,11 +374,11 @@ class App extends REST_Controller {
  //    				   			'pesan' => 'project not found'
  //    				   			], REST_Controller::HTTP_OK);
  //    		}
-    		
+
  //    		$data_token = ['token' => $token];
 
  //    		$cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
- //    		$id_user = $cek_token->row()->id_user; 
+ //    		$id_user = $cek_token->row()->id_user;
 
  //    		if ($cek_token->num_rows() < 1) {
 
@@ -361,7 +397,7 @@ class App extends REST_Controller {
  //    				$this->response(['status' => FALSE,
 	// 		 	  					'pesan'=>$this->form_validation->get_errors_as_array()], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
  //    			} else {
-    				
+
  //    				$inputan = [
  //    						'message' => $this->post('message'),
  //                            'daily_scrum' => $this->post('daily_scrum'),
@@ -373,7 +409,7 @@ class App extends REST_Controller {
  //    						];
  //                            //date("h:i:sa")
 	//     			$query_input = $this->M_api->insert_pesan('tb_message', $inputan);
-	    			
+
 	//     			if ($query_input == TRUE) {
 	//     				$this->response([
 	//     								'status' => TRUE,
@@ -385,8 +421,8 @@ class App extends REST_Controller {
 	//     				   				'pesan' => 'Send Message Fail'
 	//     				   				], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
 	//     			}
- //    			}	
-    			
+ //    			}
+
  //    		}
 
 	// 	} else {
@@ -411,11 +447,11 @@ class App extends REST_Controller {
                                 'pesan' => 'project not found'
                                 ], REST_Controller::HTTP_OK);
             }
-            
+
             $data_token = ['token' => $token];
 
             $cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
-            $id_user = $cek_token->row()->id_user; 
+            $id_user = $cek_token->row()->id_user;
 
             if ($cek_token->num_rows() < 1) {
 
@@ -453,7 +489,7 @@ class App extends REST_Controller {
                             ];
                             //date("h:i:sa")
                         $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
-                        
+
                         if ($query_input == TRUE) {
                             $this->response([
                                             'status' => TRUE,
@@ -478,7 +514,7 @@ class App extends REST_Controller {
                             ];
                             //date("h:i:sa")
                     $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
-                    
+
                     if ($query_input == TRUE) {
                         $this->response([
                                         'status' => TRUE,
@@ -491,10 +527,10 @@ class App extends REST_Controller {
                                         ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
                     }
                     }
-                    
-                    
-                }   
-                
+
+
+                }
+
             }
 
         } else {
@@ -514,7 +550,7 @@ class App extends REST_Controller {
         $data_token = ['token' => $token];
 
             $cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
-            $id_user = $cek_token->row()->id_user; 
+            $id_user = $cek_token->row()->id_user;
         $inputan = [
                     'message' => $this->post('message'),
                     'daily_scrum' => "1",
@@ -526,7 +562,7 @@ class App extends REST_Controller {
                             ];
                             //date("h:i:sa")
             $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
-                        
+
             if ($query_input == TRUE) {
                 $this->response([
                                 'status' => TRUE,
@@ -548,7 +584,7 @@ class App extends REST_Controller {
         $data_token = ['token' => $token];
 
             $cek_token = $this->M_api->get_keadaan('tb_user', $data_token);
-            $id_user = $cek_token->row()->id_user; 
+            $id_user = $cek_token->row()->id_user;
         $inputan = [
                     'message' => $this->post('message'),
                     'daily_scrum' => "0",
@@ -560,7 +596,7 @@ class App extends REST_Controller {
                             ];
                             //date("h:i:sa")
             $query_input = $this->M_api->insert_pesan('tb_message', $inputan);
-                        
+
             if ($query_input == TRUE) {
                 $this->response([
                                 'status' => TRUE,
@@ -602,7 +638,7 @@ class App extends REST_Controller {
     						], REST_Controller::HTTP_OK);
 
     			} else {
-    				
+
     				$data_chat = $query_chat->result();
     				$this->response([
     						'status' => TRUE,
@@ -648,7 +684,7 @@ class App extends REST_Controller {
                             ], REST_Controller::HTTP_OK);
 
                 } else {
-                    
+
                     $data_chat = $query_chat->result();
                     $this->response([
                             'status' => TRUE,
@@ -713,9 +749,9 @@ class App extends REST_Controller {
             $param = ['token' => $token];
             $cek_jabatan = $this->db->get_where('tb_user', $param)->row();
             $id_user = $cek_jabatan->id_user;
-            
+
             $query = $this->M_api->cek_join_tim($id_project, $id_user);
-            
+
             if ($query->num_rows() <= 0) {
                 $this->response([
                             'status' => FALSE,
@@ -738,7 +774,7 @@ class App extends REST_Controller {
 
     public function show_all_sprint_get($id_project = null )
     {
-        
+
     	$id_project = $this->uri->segment(3);
     	if ($id_project != null) {
     		$query =  $this->M_api->get_join_three_table_sprint('tb_project', 'tb_sprint', 'tb_productbacklog','id_project', 'id_pb', 'tb_productbacklog.id_project', $id_project, 'tb_productbacklog.priority','asc');
@@ -889,9 +925,9 @@ class App extends REST_Controller {
     		} else {
     			$query = $this->M_api->get_keadaan('tb_user', $params)->row();
     			$id_user = $query->id_user;
-    			
+
     			$notif = $this->M_api->list_baru('tb_notif', array('tb_notif.id_user'=> $id_user), 3, 'waktu', 'desc');
-               
+
     			if (!$notif) {
     				$this->response([
     						'status' => FALSE,
@@ -904,21 +940,21 @@ class App extends REST_Controller {
     						'pesan' => $data
     						], REST_Controller::HTTP_OK);
     			}
-    			
+
     		}
-    		
+
     	} else {
     		$this->response([
     						'status' => FALSE,
     						'pesan' => 'method unknow'
     						], REST_Controller::HTTP_BAD_REQUEST);
     	}
-    	
+
     }
 
     public function sendmail($to,$subject,$message)
-    { 
-    
+    {
+
     $config = Array(
         // 'protocol' => 'smtp',
         // 'smtp_host' => 'ssl://smtp.googlemail.com',
@@ -1007,14 +1043,14 @@ class App extends REST_Controller {
                                         'pesan' => "server success recive token"
                                         ]);
                 }
-                
-               
+
+
             }
         }
-        
-        
-        
-        
+
+
+
+
      }
      public function sender_notif_post()
      {
@@ -1026,10 +1062,10 @@ class App extends REST_Controller {
         $server_key = "AIzaSyAhsXKd8XTAuIz_KqxOJN6DqDg9etMl-TQ";
        // $this->db->order_by('id', 'desc');
         $ambil = $this->db->get('fcm_info', array('nomer' => 1, ))->row();
-        
+
         $key = $ambil->fcm_token;
-        
-        
+
+
             $headers = array(
                     'Authorization:key=' .$server_key ,
                     'Content-Type:application/json'

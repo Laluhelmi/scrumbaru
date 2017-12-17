@@ -15,7 +15,7 @@ $config = array(
 		),
 	'login_post'=>array(
 		array('field'=>'password','label'=>'password','rules'=>'trim|required|min_length[8]|max_length[16]'),
-		array('field'=>'email','label'=>'email','rules'=>'trim|required|valid_email'),		
+		array('field'=>'email','label'=>'email','rules'=>'trim|required|valid_email'),
 		),
 	);
 

@@ -14,13 +14,29 @@ class M_api extends CI_Model {
 	// 	$this->db->insert($table, $data);
 	// 	return $this->db->insert_id() ? TRUE : false;
 	// }
-
 	public function insert_pesan($table, $data)
 	{
 		$this->db->insert($table, $data);
-		return TRUE;
+		return $this->db->insert_id();
 	}
 
+	public function getProjectType($value='')
+	{
+		return $this->db->get('tb_jenisproyek')->result();
+	}
+
+
+	public function insert_project_and_team($data_projek,$data_team){
+		$this->db->insert("tb_project",$data_projek);
+		$data_team['id_project'] =  $this->db->insert_id();
+		$this->db->insert("tb_tim",$data_team);
+		return TRUE;
+	}
+	public function insertNewProjectType($data)
+	{
+	$this->db->insert("tb_jenisproyek",$data);
+	return $this->db->insert_id();
+	}
 	 public function cek_join_tim($id_project, $id_user)
 	{
 		$jabatan = "Scrum Master";
@@ -76,6 +92,11 @@ class M_api extends CI_Model {
 		$query = $this->db->get_where($table, $params);
 		return $query;
 	}
+	public function getIduser($token)
+	{
+		$query = $this->db->query("SELECT * FROM `tb_user` WHERE token = '$token'");
+													return $query->result();
+	}
 
 	// public function get_join_dashboard($id_user)
 	// {
@@ -110,7 +131,7 @@ class M_api extends CI_Model {
         $query = $this->db->get();
         return $query;
 	}
-	
+
 	public function get_join_message_bydate($id_projek, $tanggal)
 	{
 		$this->db->select('message, tanggal, jam, username');
@@ -124,7 +145,7 @@ class M_api extends CI_Model {
         return $query;
 	}
 	public function list_baru($table, $where, $limit, $order,$order_type)
-	{	
+	{
 		$this->db->select('tb_user.username, tb_notif.jabatan, tb_notif.status, tb_notif.waktu, tb_project.judul');
 		$this->db->join('tb_user', 'tb_user.id_user = tb_notif.id_inviter');
 		$this->db->join('tb_project', 'tb_project.id_project = tb_notif.id_project');
@@ -146,7 +167,7 @@ class M_api extends CI_Model {
 
 	// public function get_join_notif()
 	// {
-	// 	$this->db->select('id_inviter, judul, waktu, status, tb_notif.id_user');
+	// 	$this->db->select('id_inviter, judul, waktu, gstatus, tb_notif.id_user');
  //        $this->db->from('tb_notif');
  //        $this->db->join('tb_project', 'tb_notif.id_project = tb_project.id_project');
  //        $this->db->where('status','0');
@@ -258,8 +279,8 @@ class M_api extends CI_Model {
 	    		$this->db->where('tb_sprint.status', $status);
 				$this->db->order_by($colum, $order_type);
 				$Q = $this->db->get($table3)->num_rows();
-	        
-	     
+
+
 	        return $Q;
   	}
 
